@@ -7,6 +7,6 @@ type User struct {
 	Username  string             `bson:"username" json:"username"`
 	Email     string             `bson:"email" json:"email"`
 	Password  string             `bson:"password" json:"password"`
-	createdAt primitive.DateTime `bson:"created_at,omitempty" json:"created_at,omitempty"`
-	updatedAt primitive.DateTime `bson:"updated_at,omitempty" json:"updated_at,omitempty"`
+	CreatedAt primitive.DateTime `bson:"created_at,omitempty" json:"created_at,omitempty"`
+	UpdatedAt primitive.DateTime `bson:"updated_at,omitempty" json:"updated_at,omitempty"`
 }
