@@ -20,6 +20,7 @@ func main() {
 	router.GET("/apidocs/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 	// routes
 	routes.UserRoutes(router, client)
+	routes.RegionRoutes(router, client.Database("ginapi"))
 
 	// run the server
 	router.Run(":8080")

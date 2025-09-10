@@ -18,6 +18,264 @@
     "host": "localhost:8080",
     "basePath": "/",
     "paths": {
+        "/regions": {
+            "get": {
+                "description": "Ambil semua region dari database",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "regions"
+                ],
+                "summary": "Get all regions",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.Region"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Buat region baru",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "regions"
+                ],
+                "summary": "Create region",
+                "parameters": [
+                    {
+                        "description": "Region Data",
+                        "name": "region",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.Region"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/regions/{id}": {
+            "get": {
+                "description": "Ambil region berdasarkan ID",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "regions"
+                ],
+                "summary": "Get region by ID",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Region ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.Region"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            },
+            "put": {
+                "description": "Update region berdasarkan ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "regions"
+                ],
+                "summary": "Update region",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Region ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Region Data",
+                        "name": "region",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.Region"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Hapus region berdasarkan ID",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "regions"
+                ],
+                "summary": "Delete region",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Region ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/users": {
             "get": {
                 "description": "Ambil semua user dari database",
@@ -96,6 +354,32 @@
         }
     },
     "definitions": {
+        "models.Region": {
+            "type": "object",
+            "properties": {
+                "city": {
+                    "type": "string"
+                },
+                "code": {
+                    "type": "string"
+                },
+                "district": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "state": {
+                    "type": "string"
+                },
+                "sub_district": {
+                    "type": "string"
+                },
+                "zipcode": {
+                    "type": "string"
+                }
+            }
+        },
         "models.User": {
             "type": "object"
         }
