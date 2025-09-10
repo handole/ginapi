@@ -1,5 +1,22 @@
 basePath: /
 definitions:
+  models.Region:
+    properties:
+      city:
+        type: string
+      code:
+        type: string
+      district:
+        type: string
+      id:
+        type: string
+      state:
+        type: string
+      sub_district:
+        type: string
+      zipcode:
+        type: string
+    type: object
   models.User:
     type: object
 host: localhost:8080
@@ -16,6 +33,177 @@ info:
   title: Go Gin Mongo API
   version: "1.0"
 paths:
+  /regions:
+    get:
+      description: Ambil semua region dari database
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Region'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Get all regions
+      tags:
+      - regions
+    post:
+      consumes:
+      - application/json
+      description: Buat region baru
+      parameters:
+      - description: Region Data
+        in: body
+        name: region
+        required: true
+        schema:
+          $ref: '#/definitions/models.Region'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Create region
+      tags:
+      - regions
+  /regions/{id}:
+    delete:
+      description: Hapus region berdasarkan ID
+      parameters:
+      - description: Region ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Delete region
+      tags:
+      - regions
+    get:
+      description: Ambil region berdasarkan ID
+      parameters:
+      - description: Region ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Region'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Get region by ID
+      tags:
+      - regions
+    put:
+      consumes:
+      - application/json
+      description: Update region berdasarkan ID
+      parameters:
+      - description: Region ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Region Data
+        in: body
+        name: region
+        required: true
+        schema:
+          $ref: '#/definitions/models.Region'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Update region
+      tags:
+      - regions
   /users:
     get:
       description: Ambil semua user dari database
