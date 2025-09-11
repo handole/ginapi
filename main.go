@@ -20,6 +20,7 @@ func main() {
 	router.GET("/apidocs/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 	// routes
 	routes.UserRoutes(router, client)
+	routes.AuthRoutes(router, client.Database("ginapi"))
 	routes.RegionRoutes(router, client.Database("ginapi"))
 
 	// run the server
@@ -40,3 +41,6 @@ func main() {
 
 // @host      localhost:8080
 // @BasePath  /
+// @securityDefinitions.apikey BearerAuth
+// @in header
+// @name Authorization
