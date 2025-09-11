@@ -4,8 +4,6 @@ import (
 	"net/http"
 	"strings"
 
-	"ginapi/utils"
-
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"
 )
@@ -30,7 +28,8 @@ func AuthMiddleware() gin.HandlerFunc {
 		}
 		tokenString := parts[1]
 		// parse token
-		claims := &utils.Claims{}
+		claims := &jwt.RegisteredClaims{}
+		// parse token dengan key yg sama seperti saat generate token
 		token, err := jwt.ParseWithClaims(tokenString, claims, func(token *jwt.Token) (interface{}, error) {
 			return jwtKey, nil
 		})
@@ -42,7 +41,7 @@ func AuthMiddleware() gin.HandlerFunc {
 		}
 
 		// simpan email di context
-		c.Set("email", claims.Email)
+		c.Set("userID", claims.Subject)
 		c.Next()
 	}
 }

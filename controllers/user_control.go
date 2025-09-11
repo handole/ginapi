@@ -24,6 +24,7 @@ type UserController struct {
 // @Accept       json
 // @Produce      json
 // @Param        user  body      models.User  true  "User Data"
+// @Security     BearerAuth
 // @Success      201   {object}  map[string]string
 // @Failure      400   {object}  map[string]string
 // @Router       /users [post]
@@ -55,6 +56,7 @@ func (uc *UserController) CreateUser(c *gin.Context) {
 // @Description  Ambil semua user dari database
 // @Tags         users
 // @Produce      json
+// @Security     BearerAuth
 // @Success      200  {array}   models.User
 // @Failure      500  {object}  map[string]string
 // @Router       /users [get]

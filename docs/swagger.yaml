@@ -30,7 +30,7 @@ info:
     name: MIT
     url: https://opensource.org/licenses/MIT
   termsOfService: http://swagger.io/terms/
-  title: Go Gin Mongo API
+  title: GinAPI
   version: "1.0"
 paths:
   /auth/login:
@@ -96,6 +96,41 @@ paths:
   /regions:
     get:
       description: Ambil semua region dari database
+      parameters:
+      - default: 1
+        description: Page number
+        in: query
+        name: page
+        type: integer
+      - default: 10
+        description: Items per page
+        in: query
+        name: limit
+        type: integer
+      - description: Filter by state
+        in: query
+        name: state
+        type: string
+      - description: Filter by city
+        in: query
+        name: city
+        type: string
+      - description: Filter by district
+        in: query
+        name: district
+        type: string
+      - description: Filter by code
+        in: query
+        name: code
+        type: string
+      - description: Filter by zipcode
+        in: query
+        name: zipcode
+        type: string
+      - description: Filter by sub_district
+        in: query
+        name: sub_district
+        type: string
       produces:
       - application/json
       responses:
@@ -111,6 +146,8 @@ paths:
             additionalProperties:
               type: string
             type: object
+      security:
+      - BearerAuth: []
       summary: Get all regions
       tags:
       - regions
@@ -140,6 +177,8 @@ paths:
             additionalProperties:
               type: string
             type: object
+      security:
+      - BearerAuth: []
       summary: Create region
       tags:
       - regions
@@ -179,6 +218,8 @@ paths:
             additionalProperties:
               type: string
             type: object
+      security:
+      - BearerAuth: []
       summary: Delete region
       tags:
       - regions
@@ -215,6 +256,8 @@ paths:
             additionalProperties:
               type: string
             type: object
+      security:
+      - BearerAuth: []
       summary: Get region by ID
       tags:
       - regions
@@ -261,6 +304,8 @@ paths:
             additionalProperties:
               type: string
             type: object
+      security:
+      - BearerAuth: []
       summary: Update region
       tags:
       - regions
@@ -282,6 +327,8 @@ paths:
             additionalProperties:
               type: string
             type: object
+      security:
+      - BearerAuth: []
       summary: Get all users
       tags:
       - users
@@ -311,11 +358,14 @@ paths:
             additionalProperties:
               type: string
             type: object
+      security:
+      - BearerAuth: []
       summary: Create user
       tags:
       - users
 securityDefinitions:
   BearerAuth:
+    description: Type "Bearer" followed by a space and JWT token.
     in: header
     name: Authorization
     type: apiKey

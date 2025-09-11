@@ -26,6 +26,7 @@ type RegionController struct {
 // @Accept       json
 // @Produce      json
 // @Param        region  body      models.Region  true  "Region Data"
+// @Security     BearerAuth
 // @Success      201     {object}  map[string]string
 // @Failure      400     {object}  map[string]string
 // @Router       /regions [post]
@@ -54,6 +55,15 @@ func (rc *RegionController) CreateRegion(c *gin.Context) {
 // @Description  Ambil semua region dari database
 // @Tags         regions
 // @Produce      json
+// @Param        page   query     int  false  "Page number" default(1)
+// @Param        limit  query     int  false  "Items per page" default(10)
+// @Param        state       query     string  false  "Filter by state"
+// @Param        city        query     string  false  "Filter by city"
+// @Param        district    query     string  false  "Filter by district"
+// @Param        code        query     string  false  "Filter by code"
+// @Param        zipcode     query     string  false  "Filter by zipcode"
+// @Param        sub_district query    string  false  "Filter by sub_district"
+// @Security     BearerAuth
 // @Success      200  {array}   models.Region
 // @Failure      500  {object}  map[string]string
 // @Router       /regions [get]
@@ -144,6 +154,7 @@ func (rc *RegionController) GetRegions(c *gin.Context) {
 // @Tags         regions
 // @Produce      json
 // @Param        id   path      string  true  "Region ID"
+// @Security     BearerAuth
 // @Success      200  {object}  models.Region
 // @Failure      400  {object}  map[string]string
 // @Failure      404  {object}  map[string]string
@@ -179,6 +190,7 @@ func (rc *RegionController) GetRegionByID(c *gin.Context) {
 // @Produce      json
 // @Param        id      path      string        true  "Region ID"
 // @Param        region  body      models.Region  true  "Region Data"
+// @Security     BearerAuth
 // @Success      200     {object}  map[string]string
 // @Failure      400     {object}  map[string]string
 // @Failure      404     {object}  map[string]string
@@ -228,6 +240,7 @@ func (rc *RegionController) UpdateRegion(c *gin.Context) {
 // @Tags         regions
 // @Produce      json
 // @Param        id   path      string  true  "Region ID"
+// @Security     BearerAuth
 // @Success      200  {object}  map[string]string
 // @Failure      400  {object}  map[string]string
 // @Failure      404  {object}  map[string]string
