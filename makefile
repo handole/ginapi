@@ -1,4 +1,4 @@
-APP_NAME=go-gin-mongo
+APP_NAME=GinAPI
 MAIN=main.go
 
 # lokasi swag binary (default di GOPATH/bin)

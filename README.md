@@ -21,6 +21,7 @@ GinAPI is a RESTful API server built with [Gin](https://github.com/gin-gonic/gin
 git clone https://github.com/yourusername/ginapi.git
 cd ginapi
 go mod tidy
+make swag
 ```
 
 ### Running the Server
