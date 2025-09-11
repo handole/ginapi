@@ -71,6 +71,34 @@ func (rc *RegionController) GetRegions(c *gin.Context) {
 
 	skip := (page - 1) * limit
 
+	// filter query
+	state := c.Query("state")
+	city := c.Query("city")
+	district := c.Query("district")
+	code := c.Query("code")
+	zipcode := c.Query("zipcode")
+	subDistrict := c.Query("sub_district")
+
+	filter := bson.M{}
+	if state != "" {
+		filter["state"] = bson.M{"$regex": state, "$options": "i"}
+	}
+	if city != "" {
+		filter["city"] = bson.M{"$regex": city, "$options": "i"}
+	}
+	if district != "" {
+		filter["district"] = bson.M{"$regex": district, "$options": "i"}
+	}
+	if code != "" {
+		filter["code"] = code
+	}
+	if zipcode != "" {
+		filter["zipcode"] = zipcode
+	}
+	if subDistrict != "" {
+		filter["sub_district"] = bson.M{"$regex": subDistrict, "$options": "i"}
+	}
+
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
@@ -84,9 +112,10 @@ func (rc *RegionController) GetRegions(c *gin.Context) {
 	// set pagination headers
 	opts := options.Find().
 		SetSkip(int64(skip)).
-		SetLimit(int64(limit))
+		SetLimit(int64(limit)).
+		SetSort(bson.M{"created_at": -1}) // sort by created_at desc
 
-	cursor, err := rc.Collection.Find(ctx, bson.M{}, opts)
+	cursor, err := rc.Collection.Find(ctx, filter, opts)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch regions"})
 		return
@@ -99,6 +128,7 @@ func (rc *RegionController) GetRegions(c *gin.Context) {
 		return
 	}
 
+	// response with pagination info
 	c.JSON(http.StatusOK, gin.H{
 		"data":       regions,
 		"page":       page,
