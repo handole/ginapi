@@ -1,5 +1,28 @@
 basePath: /
 definitions:
+  models.Address:
+    properties:
+      id:
+        type: string
+      is_default:
+        type: boolean
+      latitude:
+        type: number
+      longitude:
+        type: number
+      notes:
+        type: string
+      phone_number:
+        type: string
+      region_id:
+        type: string
+      ship_to_name:
+        type: string
+      street:
+        type: string
+      user_id:
+        type: string
+    type: object
   models.Region:
     properties:
       city:
@@ -33,6 +56,36 @@ info:
   title: GinAPI
   version: "1.0"
 paths:
+  /addresses:
+    post:
+      consumes:
+      - application/json
+      description: Create a new address for a user
+      parameters:
+      - description: Address to create
+        in: body
+        name: address
+        required: true
+        schema:
+          $ref: '#/definitions/models.Address'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/models.Address'
+        "400":
+          description: Internal Server Error
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      summary: Create a new address
+      tags:
+      - addresses
   /auth/login:
     post:
       consumes:
@@ -361,6 +414,52 @@ paths:
       security:
       - BearerAuth: []
       summary: Create user
+      tags:
+      - users
+  /users/{userID}/addresses:
+    get:
+      description: Retrieve all addresses associated with a user
+      parameters:
+      - description: User ID
+        in: path
+        name: userID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Address'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      summary: Get addresses for a user
+      tags:
+      - users
+  /users/profile:
+    get:
+      description: Ambil profil user berdasarkan token JWT
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.User'
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Get user profile
       tags:
       - users
 securityDefinitions:
