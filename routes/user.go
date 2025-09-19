@@ -13,7 +13,7 @@ func UserRoutes(router *gin.Engine, client *mongo.Client) {
 	userController := controllers.UserController{Collection: collection}
 
 	userRoutes := router.Group("/users")
-	userRoutes.Use(middlewares.AuthMiddleware()) // Apply authentication middleware
+	userRoutes.Use(middlewares.JWTMiddleware()) // Apply authentication middleware
 	{
 		userRoutes.POST("/", userController.CreateUser)
 		userRoutes.GET("/", userController.GetUsers)
