@@ -97,7 +97,6 @@ func (uc *UserController) GetProfile(c *gin.Context) {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
 		return
 	}
-
 	oid, err := primitive.ObjectIDFromHex(userID.(string))
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid user ID"})
