@@ -92,14 +92,9 @@ func (uc *UserController) GetUsers(c *gin.Context) {
 // @Router       /users/profile [get]
 // get user profile from JWT token
 func (uc *UserController) GetProfile(c *gin.Context) {
-	userID, exists := c.Get("userID")
+	email, exists := c.Get("email")
 	if !exists {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
-		return
-	}
-	oid, err := primitive.ObjectIDFromHex(userID.(string))
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid user ID"})
 		return
 	}
 
@@ -107,7 +102,7 @@ func (uc *UserController) GetProfile(c *gin.Context) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
-	err = uc.Collection.FindOne(ctx, bson.M{"_id": oid}).Decode(&user)
+	err := uc.Collection.FindOne(ctx, bson.M{"email": email}).Decode(&user)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch user profile"})
 		return
@@ -127,20 +122,14 @@ func (uc *UserController) GetProfile(c *gin.Context) {
 // @Failure 500 {object} string "Internal Server Error"
 // @Router /users/{userID}/addresses [get]
 func (uc *UserController) GetUserAddresses(c *gin.Context) {
-	userID := c.Param("userID")
-	oid, err := primitive.ObjectIDFromHex(userID)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid user ID"})
-		return
-	}
-
+	email := c.Param("email")
 	addressCollection := uc.Collection.Database().Collection("address")
 	var addresses []models.Address
 
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
-	cursor, err := addressCollection.Find(ctx, bson.M{"user_id.$id": oid})
+	cursor, err := addressCollection.Find(ctx, bson.M{"user_id.$email": email})
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch addresses"})
 		return
@@ -181,14 +170,10 @@ func (uc *UserController) AddUserAddresses(c *gin.Context) {
 		IsDefault   bool    `json:"is_default"`
 		RegionID    string  `json:"region_id" binding:"required"`
 		UserID      string  `json:"user_id" binding:"required"`
+		Email       string  `json:"email" binding:"required"`
 	}
 
-	userID := c.Param("userID")
-	oid, err := primitive.ObjectIDFromHex(userID)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid user ID"})
-		return
-	}
+	email := c.Param("email")
 
 	regionObjID, err := primitive.ObjectIDFromHex(body.RegionID)
 	if err != nil {
