@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"context"
+	"fmt"
 	"net/http"
 	"time"
 
@@ -14,7 +15,17 @@ import (
 )
 
 type UserController struct {
-	Collection *mongo.Collection
+	UserCollection    *mongo.Collection
+	client            *mongo.Client
+	AddressCollection *mongo.Collection
+}
+
+func NewUserController(client *mongo.Client, dbName, collectionName string) *UserController {
+	UserCollection := client.Database(dbName).Collection(collectionName)
+	return &UserController{
+		UserCollection: UserCollection,
+		client:         client,
+	}
 }
 
 // CreateUser godoc
@@ -42,7 +53,7 @@ func (uc *UserController) CreateUser(c *gin.Context) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-	result, err := uc.Collection.InsertOne(ctx, user)
+	result, err := uc.UserCollection.InsertOne(ctx, user)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create user"})
 		return
@@ -65,7 +76,7 @@ func (uc *UserController) GetUsers(c *gin.Context) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
-	cursor, err := uc.Collection.Find(ctx, bson.M{})
+	cursor, err := uc.UserCollection.Find(ctx, bson.M{})
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch users"})
 		return
@@ -92,6 +103,7 @@ func (uc *UserController) GetUsers(c *gin.Context) {
 // @Router       /users/profile [get]
 // get user profile from JWT token
 func (uc *UserController) GetProfile(c *gin.Context) {
+	fmt.Println("masuk get profile", c)
 	email, exists := c.Get("email")
 	if !exists {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
@@ -102,7 +114,7 @@ func (uc *UserController) GetProfile(c *gin.Context) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
-	err := uc.Collection.FindOne(ctx, bson.M{"email": email}).Decode(&user)
+	err := uc.UserCollection.FindOne(ctx, bson.M{"email": email}).Decode(&user)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch user profile"})
 		return
@@ -123,7 +135,7 @@ func (uc *UserController) GetProfile(c *gin.Context) {
 // @Router /users/{userID}/addresses [get]
 func (uc *UserController) GetUserAddresses(c *gin.Context) {
 	email := c.Param("email")
-	addressCollection := uc.Collection.Database().Collection("address")
+	addressCollection := uc.UserCollection.Database().Collection("address")
 	var addresses []models.Address
 
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
@@ -169,11 +181,20 @@ func (uc *UserController) AddUserAddresses(c *gin.Context) {
 		Notes       string  `json:"notes"`
 		IsDefault   bool    `json:"is_default"`
 		RegionID    string  `json:"region_id" binding:"required"`
-		UserID      string  `json:"user_id" binding:"required"`
-		Email       string  `json:"email" binding:"required"`
 	}
 
 	email := c.Param("email")
+
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	// 🔎 Cari user berdasarkan email
+	var user models.User
+	err := uc.UserCollection.FindOne(ctx, bson.M{"email": email}).Decode(&user)
+	if err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "User not found"})
+		return
+	}
 
 	regionObjID, err := primitive.ObjectIDFromHex(body.RegionID)
 	if err != nil {
@@ -191,17 +212,28 @@ func (uc *UserController) AddUserAddresses(c *gin.Context) {
 		Notes:       body.Notes,
 		IsDefault:   body.IsDefault,
 		RegionID:    regionObjID,
-		UserID:      oid,
+		UserID:      user.ID,
 	}
 
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	// Simpan ke addresses collection
+	ctx, cancel = context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
-	result, err := uc.Collection.InsertOne(ctx, address)
+	// Simpan ke addresses collection
+	addressCollection := uc.UserCollection.Database().Collection("address")
+	_, err = addressCollection.InsertOne(ctx, address)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create address"})
 		return
 	}
+	// _, err = uc.collection.UpdateOne(ctx,
+	// 	bson.M{"_id": user.ID},
+	// 	bson.M{"$push": bson.M{"addresses": dbRef}},
+	// )
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to link address to user"})
+		return
+	}
 
-	c.JSON(http.StatusCreated, gin.H{"result": result})
+	c.JSON(http.StatusCreated, address)
 }

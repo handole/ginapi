@@ -9,8 +9,13 @@ import (
 )
 
 func UserRoutes(router *gin.Engine, client *mongo.Client) {
-	collection := client.Database("ginapi").Collection("users")
-	userController := controllers.UserController{Collection: collection}
+	userCollection := client.Database("ginapi").Collection("users")
+	addressCollection := client.Database("ginapi").Collection("addresses")
+
+	userController := controllers.UserController{
+		UserCollection:    userCollection,
+		AddressCollection: addressCollection,
+	}
 
 	userRoutes := router.Group("/users")
 	userRoutes.Use(middlewares.AuthMiddleware()) // Apply authentication middleware
@@ -18,7 +23,7 @@ func UserRoutes(router *gin.Engine, client *mongo.Client) {
 		userRoutes.POST("/", userController.CreateUser)
 		userRoutes.GET("/", userController.GetUsers)
 		userRoutes.GET("/profile", userController.GetProfile)
-		userRoutes.GET("/addresses", userController.GetUserAddresses)
-		userRoutes.POST("/addresses", userController.AddUserAddresses)
+		userRoutes.GET("/:id/addresses", userController.GetUserAddresses)
+		userRoutes.POST("/:id/addresses", userController.AddUserAddresses)
 	}
 }
