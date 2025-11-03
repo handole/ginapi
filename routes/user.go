@@ -23,7 +23,8 @@ func UserRoutes(router *gin.Engine, client *mongo.Client) {
 		userRoutes.POST("/", userController.CreateUser)
 		userRoutes.GET("/", userController.GetUsers)
 		userRoutes.GET("/profile", userController.GetProfile)
-		userRoutes.GET("/:id/addresses", userController.GetUserAddresses)
-		userRoutes.POST("/:id/addresses", userController.AddUserAddresses)
+
+		userRoutes.GET("/addresses", userController.GetUserAddresses)
+		userRoutes.POST("/addresses", userController.AddUserAddresses)
 	}
 }

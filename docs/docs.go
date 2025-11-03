@@ -660,6 +660,9 @@ const docTemplate = `{
         "models.Address": {
             "type": "object",
             "properties": {
+                "created_at": {
+                    "type": "string"
+                },
                 "id": {
                     "type": "string"
                 },
@@ -677,6 +680,14 @@ const docTemplate = `{
                 },
                 "phone_number": {
                     "type": "string"
+                },
+                "region": {
+                    "description": "Non-persisted field (join-result)",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/models.Region"
+                        }
+                    ]
                 },
                 "region_id": {
                     "type": "string"
@@ -719,7 +730,27 @@ const docTemplate = `{
             }
         },
         "models.User": {
-            "type": "object"
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string"
+                },
+                "email": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string"
+                },
+                "updated_at": {
+                    "type": "string"
+                },
+                "username": {
+                    "type": "string"
+                }
+            }
         }
     },
     "securityDefinitions": {

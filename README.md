@@ -22,6 +22,7 @@ git clone https://github.com/yourusername/ginapi.git
 cd ginapi
 go mod tidy
 make swag
+make swag init -g main.go
 ```
 
 ### Running the Server

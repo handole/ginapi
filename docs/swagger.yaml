@@ -2,6 +2,8 @@ basePath: /
 definitions:
   models.Address:
     properties:
+      created_at:
+        type: string
       id:
         type: string
       is_default:
@@ -14,6 +16,10 @@ definitions:
         type: string
       phone_number:
         type: string
+      region:
+        allOf:
+        - $ref: '#/definitions/models.Region'
+        description: Non-persisted field (join-result)
       region_id:
         type: string
       ship_to_name:
@@ -41,6 +47,19 @@ definitions:
         type: string
     type: object
   models.User:
+    properties:
+      created_at:
+        type: string
+      email:
+        type: string
+      id:
+        type: string
+      password:
+        type: string
+      updated_at:
+        type: string
+      username:
+        type: string
     type: object
 host: localhost:8080
 info:
