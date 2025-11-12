@@ -126,34 +126,37 @@ func (uc *UserController) GetProfile(c *gin.Context) {
 // @Description Retrieve all addresses associated with a user
 // @Tags users
 // @Produce json
-// @Param userID path string true "User ID"
 // @Success 200 {array} models.Address
 // @Failure 500 {object} string "Internal Server Error"
-// @Router /users/{userID}/addresses [get]
+// @Router /users/addresses [get]
 func (uc *UserController) GetUserAddresses(c *gin.Context) {
+	fmt.Println("➡️ masuk GetUserAddresses")
+
+	// ✅ Ambil email dari JWT context (diset di middleware)
 	email, exists := c.Get("email")
 	if !exists {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
 		return
 	}
 
+	fmt.Println("📧 email:", email)
+
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
-	/// cari user berdasarkan email
+	// ✅ Cari user berdasarkan email
 	var user models.User
-	err := uc.UserCollection.FindOne(ctx, bson.M{"email": email}).Decode(&user)
-	if err != nil {
+	if err := uc.UserCollection.FindOne(ctx, bson.M{"email": email}).Decode(&user); err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": "User not found"})
 		return
 	}
 
-	// ambil collection address
+	// ✅ Ambil collection addresses & regions
 	db := uc.UserCollection.Database()
 	addressCollection := db.Collection("addresses")
-	// regionCollection := db.Collection("regions")
+	regionCollection := db.Collection("regions")
 
-	// cari address berdasarkan user ID
+	// ✅ Ambil semua address milik user (pakai ObjectID)
 	cursor, err := addressCollection.Find(ctx, bson.M{"user_id": user.ID})
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch addresses"})
@@ -176,18 +179,44 @@ func (uc *UserController) GetUserAddresses(c *gin.Context) {
 		return
 	}
 
-	// untuk setiap address, ambil data regionnya
-	fmt.Printf("addresses", addresses)
-
-	// cek error cursor
-	if err := cursor.Err(); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Cursor error"})
-		return
+	// ✅ Ambil semua region yang direferensikan di addresses
+	var regionIDs []primitive.ObjectID
+	for _, addr := range addresses {
+		regionIDs = append(regionIDs, addr.RegionID)
 	}
 
-	// return hasil
+	regionCursor, err := regionCollection.Find(ctx, bson.M{"_id": bson.M{"$in": regionIDs}})
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch regions"})
+		return
+	}
+	defer regionCursor.Close(ctx)
+
+	var regions []models.Region
+	if err := regionCursor.All(ctx, &regions); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to decode regions"})
+		return
+	}
+	fmt.Printf("Region: ", regions)
+
+	// ✅ Map regionID ke region detail
+	regionMap := make(map[primitive.ObjectID]models.Region)
+	for _, reg := range regions {
+		regionMap[reg.ID] = reg
+
+	}
+
+	// ✅ Join region ke setiap address
+	for i := range addresses {
+		if reg, ok := regionMap[addresses[i].RegionID]; ok {
+			addresses[i].RegionData = &reg
+		}
+
+	}
+
+	// ✅ Return hasil akhir
 	c.JSON(http.StatusOK, gin.H{
-		"user":      email,
+		"user":      user.Email,
 		"addresses": addresses,
 	})
 }
@@ -195,14 +224,14 @@ func (uc *UserController) GetUserAddresses(c *gin.Context) {
 // AddUserAddresses godoc
 // @Summary Create a new address
 // @Description Create a new address for a user
-// @Tags addresses
+// @Tags users
 // @Accept json
 // @Produce json
 // @Param address body models.Address true "Address to create"
 // @Success 201 {object} models.Address
 // @Failure 400 {object} string "Internal Server Error"
 // @Failure 500 {object} string "Internal Server Error"
-// @Router /addresses [post]
+// @Router /users/addresses [post]
 func (uc *UserController) AddUserAddresses(c *gin.Context) {
 	var body struct {
 		Street      string  `json:"street" binding:"required"`

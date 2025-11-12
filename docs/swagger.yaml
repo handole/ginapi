@@ -75,36 +75,6 @@ info:
   title: GinAPI
   version: "1.0"
 paths:
-  /addresses:
-    post:
-      consumes:
-      - application/json
-      description: Create a new address for a user
-      parameters:
-      - description: Address to create
-        in: body
-        name: address
-        required: true
-        schema:
-          $ref: '#/definitions/models.Address'
-      produces:
-      - application/json
-      responses:
-        "201":
-          description: Created
-          schema:
-            $ref: '#/definitions/models.Address'
-        "400":
-          description: Internal Server Error
-          schema:
-            type: string
-        "500":
-          description: Internal Server Error
-          schema:
-            type: string
-      summary: Create a new address
-      tags:
-      - addresses
   /auth/login:
     post:
       consumes:
@@ -435,15 +405,9 @@ paths:
       summary: Create user
       tags:
       - users
-  /users/{userID}/addresses:
+  /users/addresses:
     get:
       description: Retrieve all addresses associated with a user
-      parameters:
-      - description: User ID
-        in: path
-        name: userID
-        required: true
-        type: string
       produces:
       - application/json
       responses:
@@ -458,6 +422,35 @@ paths:
           schema:
             type: string
       summary: Get addresses for a user
+      tags:
+      - users
+    post:
+      consumes:
+      - application/json
+      description: Create a new address for a user
+      parameters:
+      - description: Address to create
+        in: body
+        name: address
+        required: true
+        schema:
+          $ref: '#/definitions/models.Address'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/models.Address'
+        "400":
+          description: Internal Server Error
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      summary: Create a new address
       tags:
       - users
   /users/profile:
