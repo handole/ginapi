@@ -5,7 +5,7 @@ import (
 )
 
 type Region struct {
-	ID           primitive.ObjectID `bson:"_id,omitempty" json:"id,omitempty"`
+	ID           primitive.ObjectID `bson:"_id,omitempty" json:"id"`
 	State        string             `bson:"state" json:"state"`
 	City         string             `bson:"city" json:"city"`
 	District     string             `bson:"district" json:"district"`

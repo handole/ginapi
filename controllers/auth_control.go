@@ -7,7 +7,6 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"golang.org/x/crypto/bcrypt"
 
@@ -52,7 +51,7 @@ func (ac *AuthController) Register(c *gin.Context) {
 		return
 	}
 	user.Password = string(hashedPassword)
-	user.CreatedAt = primitive.NewDateTimeFromTime(time.Now())
+	user.CreatedAt = time.Now()
 
 	_, err = ac.Collection.InsertOne(ctx, user)
 	if err != nil {
